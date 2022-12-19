@@ -34,7 +34,7 @@ async function createTicket(userId: number, ticketTypeId: number) {
   const ticketData = {
     ticketTypeId,
     enrollmentId: enrollment.id,
-    status: TicketStatus.RESERVED
+    status: TicketStatus.RESERVED,
   };
 
   await ticketRepository.createTicket(ticketData);
@@ -44,10 +44,18 @@ async function createTicket(userId: number, ticketTypeId: number) {
   return ticket;
 }
 
+//TEST THIS ROUTE
+async function createTicketType(name: string, price: number, isRemote: boolean, includesHotel: boolean) {
+  //create ticket type
+  const ticketType = await ticketRepository.createTicketType(name, price, isRemote, includesHotel);
+  return ticketType;
+}
+
 const ticketService = {
   getTicketTypes,
   getTicketByUserId,
-  createTicket
+  createTicket,
+  createTicketType,
 };
 
 export default ticketService;
