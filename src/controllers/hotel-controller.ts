@@ -16,6 +16,9 @@ export async function getHotels(req: AuthenticatedRequest, res: Response) {
     if (error.name === "cannotListHotelsError") {
       return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
     }
+    if (error.name === "RequestError") {
+      return res.sendStatus(httpStatus.GONE);
+    } 
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }
