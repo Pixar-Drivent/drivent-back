@@ -99,8 +99,8 @@ describe("GET /hotels", () => {
           id: createdHotel.id,
           name: createdHotel.name,
           image: createdHotel.image,
-          createdAt: createdHotel.createdAt.toISOString(),
-          updatedAt: createdHotel.updatedAt.toISOString()
+          type: expect.any(String),
+          vacancy: expect.any(Number),
         }
       ]);
     });
