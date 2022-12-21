@@ -1,6 +1,8 @@
 import hotelRepository from "@/repositories/hotel-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketRepository from "@/repositories/ticket-repository";
+import bookingRepository from "@/repositories/booking-repository";
+import roomRepository from "@/repositories/room-repository";
 import { notFoundError, requestError } from "@/errors";
 import { cannotListHotelsError } from "@/errors/cannot-list-hotels-error";
 import { HotelType } from "@/protocols";
@@ -29,24 +31,26 @@ async function getHotels(userId: number) {
   const hotels = await hotelRepository.findHotels();
   const response: HotelType[] = [];
 
-  hotels.map( (hotel) => {
+  for(let j=0; j< hotels.length; j++) {
     const hotelType: HotelType = {
-      id: hotel.id,
-      name: hotel.name,
-      image: hotel.image,
+      id: hotels[j].id,
+      name: hotels[j].name,
+      image: hotels[j].image,
       type: "",
       vacancy: 0
     };
     const typeArray: string[] = [];
 
-    hotel.Rooms.map( (room) => {
-      if(room.capacity === 1 && !typeArray.includes("Single"))
+    for(let i=0; i< hotels[j].Rooms.length; i++) {
+      if(hotels[j].Rooms[i].capacity === 1 && !typeArray.includes("Single"))
         typeArray.push("Single");
-      if(room.capacity === 2 && !typeArray.includes("Double"))
+      if(hotels[j].Rooms[i].capacity === 2 && !typeArray.includes("Double"))
         typeArray.push("Double");
-      if(room.capacity === 3 && !typeArray.includes("Triple"))
+      if(hotels[j].Rooms[i].capacity === 3 && !typeArray.includes("Triple"))
         typeArray.push("Triple");
-    });
+
+      hotelType.vacancy += await roomVacancy(hotels[j].Rooms[i].id); 
+    }
 
     if(typeArray.length === 1)
       hotelType.type = typeArray[0];
@@ -58,8 +62,15 @@ async function getHotels(userId: number) {
       hotelType.type = "Single, Double e Triple";
     
     response.push(hotelType);    
-  });
+  }
   return response;
+}
+
+async function roomVacancy(roomId: number) { 
+  const room = await roomRepository.findById(roomId);
+  const bookings = await bookingRepository.findByRoomId(roomId);
+
+  return (room.capacity - bookings.length);
 }
 
 async function getHotelsWithRooms(userId: number, hotelId: number) {
