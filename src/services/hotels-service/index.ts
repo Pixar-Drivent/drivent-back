@@ -31,6 +31,7 @@ async function getHotels(userId: number) {
 
   hotels.map( (hotel) => {
     const hotelType: HotelType = {
+      id: hotel.id,
       name: hotel.name,
       image: hotel.image,
       type: "",
