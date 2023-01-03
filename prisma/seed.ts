@@ -45,7 +45,7 @@ async function createHotelandRooms() {
 
   const genericUser = await prisma.user.create({
     data: {
-      email: "generic",
+      email: "genericI",
       password: "generic"
     }
   });
@@ -76,6 +76,84 @@ async function createHotelandRooms() {
   console.log({booking});
 }
 
+async function createActivity() {
+  const localI = await prisma.local.create({
+    data: {name: "Auditório Principal"}
+  });
+  const localII = await prisma.local.create({
+    data: {name: "Auditório Lateral"}
+  });
+  const localIII = await prisma.local.create({
+    data: {name: "Sala Workshop"}
+  });
+
+  console.log([localI, localII, localIII]);
+
+  await prisma.activity.createMany({
+    data: [
+      {
+        title: "Minecraft: montando o PC ideal",
+        localId: localI.id,
+        StartTime: dayjs('2023-01-10 09:00').toDate(),
+        EndTime: dayjs('2023-01-10 10:00').toDate(),
+        capacity: 20
+      },
+      {
+        title: "LoL: montando o PC ideal",
+        localId: localI.id,
+        StartTime: dayjs('2023-01-10 10:00').toDate(),
+        EndTime: dayjs('2023-01-10 11:00').toDate(),
+        capacity: 1
+      },
+      {
+        title: "Palestra X",
+        localId: localII.id,
+        StartTime: dayjs('2023-01-10 9:00').toDate(),
+        EndTime: dayjs('2023-01-10 11:00').toDate(),
+        capacity: 15
+      },
+      {
+        title: "Palestra Y",
+        localId: localIII.id,
+        StartTime: dayjs('2023-01-10 09:00').toDate(),
+        EndTime: dayjs('2023-01-10 10:00').toDate(),
+        capacity: 10
+      },
+      {
+        title: "Palestra Z",
+        localId: localIII.id,
+        StartTime: dayjs('2023-01-10 10:00').toDate(),
+        EndTime: dayjs('2023-01-10 11:00').toDate(),
+        capacity: 10
+      },
+    ]
+  });
+
+  const genericUser = await prisma.user.create({
+    data: {
+      email: "genericII",
+      password: "generic"
+    }
+  });
+
+  const activity = await prisma.activity.findFirst({
+    where: {
+      title: "LoL: montando o PC ideal", 
+    }
+  });
+
+  if(!activity) return;
+
+  await prisma.user_Activity.createMany({
+    data: [
+      {userId: genericUser.id, activityId: activity.id},
+      {userId: genericUser.id, activityId: activity.id + 2},
+      {userId: genericUser.id, activityId: activity.id + 2},
+      {userId: genericUser.id, activityId: activity.id + 2},
+    ]
+  });
+}
+
 async function main() {
   let event = await prisma.event.findFirst();
   if (!event) {
@@ -92,6 +170,7 @@ async function main() {
 
   console.log({ event });
   createHotelandRooms();
+  createActivity();
 }
 
 main()
