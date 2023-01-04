@@ -2,7 +2,7 @@ import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketRepository from "@/repositories/ticket-repository";
 import activitiesRepository from "@/repositories/activities-repository";
 import { notFoundError, requestError } from "@/errors";
-import { Activity } from "@prisma/client";
+import { Activity, Local } from "@prisma/client";
 import localsRepository from "@/repositories/locals-repository";
 
 async function listActivities(userId: number) {
@@ -17,14 +17,23 @@ async function listActivities(userId: number) {
   } 
 
   try {
-    const activitiesDates = await activitiesRepository.getActivitiesDates();
-    const locals = await localsRepository.getLocals();
+    const datesObj = await activitiesRepository.getActivitiesDates();
+    type LocalEvents = {id: number, name: string, events?: Activity[]};
+    const locals: LocalEvents[] = await localsRepository.getLocals();
 
-    const activitiesObj = activitiesDates.map(activity => {return(
-      { ...activity, locals }
-    );});
+    const datesLocalsObj = datesObj.map(activity => {
+      return { ...activity, locals: JSON.parse(JSON.stringify(locals)) };
+    });
 
-    return activitiesObj;
+    for (let i = 0; i < datesLocalsObj.length; i++) {
+      const dateObj = datesLocalsObj[i];
+      for (let j = 0; j < dateObj.locals.length; j++) {
+        const events = await activitiesRepository.getActivitiesByDateAndLocal(dateObj.date, dateObj.locals[j].id);
+        dateObj.locals[j].events = events;
+      }
+    }
+
+    return datesLocalsObj;
   } catch (error) {
     throw requestError(400, "BadRequest");
   }
