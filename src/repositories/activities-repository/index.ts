@@ -18,15 +18,20 @@ async function getActivitiesDates() {
 
 async function getActivitiesByDateAndLocal(date: string, localId: number) {
   const dateFilter = dayjs(date).toDate();
-  return prisma.activity.findMany({
+  const activities = await prisma.activity.findMany({
     where: {
       StartTime: {
         gte: dayjs(dateFilter.setUTCHours(0, 0, 0)).toDate(),
         lte: dayjs(dateFilter.setUTCHours(23, 59, 59)).toDate()
       },
       localId
+    },
+    include: {
+      _count: true
     }
   });
+
+  return activities;
 }
 
 const activitiesRepository = {
