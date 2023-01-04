@@ -15,9 +15,13 @@ async function listActivities(userId: number) {
     throw requestError(402, "PaymentRequired");
   } 
 
-  const activities = await activitiesRepository.getActivities();
-
-  return activities;
+  try {
+    const activitiesDates = await activitiesRepository.getActivitiesDates();
+    
+    return activitiesDates;
+  } catch (error) {
+    throw requestError(400, "BadRequest");
+  }
 }
 
 const activitiesService = {
