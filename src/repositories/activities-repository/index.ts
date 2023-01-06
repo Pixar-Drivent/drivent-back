@@ -1,29 +1,24 @@
 import { prisma } from "@/config";
 import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
 
 async function getActivitiesDates() {
   const activitiesDates = await prisma.activity.groupBy({
-    by: ["StartTime"]
+    by: ["date"]
   });
-  const dates = activitiesDates.map(activity => dayjs(activity.StartTime).format("YYYY-MM-DD"));
-  const uniqueDates = [...new Set(dates)];
-  const datesObj = uniqueDates.map(date => {return (
-    {
-      name: dayjs(date).format("dddd"),
-      date
+  const datesObj = activitiesDates.map(obj => {return (
+    { ...obj,
+      date: dayjs(obj.date).format("DD/MM"),
+      name: dayjs(obj.date).locale("pt-br").format("dddd").split("-")[0],
     }
   );});
   return datesObj;
 }
 
 async function getActivitiesByDateAndLocal(date: string, localId: number) {
-  const dateFilter = dayjs(date).toDate();
   const activities = await prisma.activity.findMany({
     where: {
-      StartTime: {
-        gte: dayjs(dateFilter.setUTCHours(0, 0, 0)).toDate(),
-        lte: dayjs(dateFilter.setUTCHours(23, 59, 59)).toDate()
-      },
+      date,
       localId
     },
     include: {
@@ -31,7 +26,24 @@ async function getActivitiesByDateAndLocal(date: string, localId: number) {
     }
   });
 
-  return activities;
+  function timeToMinutes(time: string) {
+    const hour = +time.split(":")[0];
+    const minutes = +time.split(":")[1];
+    return (hour*60)+minutes;
+  }
+
+  const newActivities = activities.map(activity => {
+    const duration = timeToMinutes(activity.EndTime) - timeToMinutes(activity.StartTime);
+    return ({
+      id: activity.id,
+      title: activity.title,
+      time: activity.StartTime + " - " + activity.EndTime,
+      duration: duration/60,
+      vacancy: activity.capacity - activity._count.User_Activity
+    });
+  });
+
+  return newActivities;
 }
 
 const activitiesRepository = {
