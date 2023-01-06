@@ -136,11 +136,14 @@ model Activity {
   id            Int             @id @default(autoincrement())
   title         String          @db.VarChar(255)
   localId       Int
-  StartTime     DateTime        @db.Timestamp(6)
-  EndTime       DateTime        @db.Timestamp(6)
+  date          String          @db.VarChar(255)
+  StartTime     String          @db.VarChar(255)
+  EndTime       String          @db.VarChar(255)
   capacity      Int
   Local         Local           @relation(fields: [localId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   User_Activity User_Activity[]
+
+  @@index([date], map: "index_date")
 }
 
 model Local {

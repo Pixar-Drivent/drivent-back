@@ -92,39 +92,60 @@ async function createActivity() {
   await prisma.activity.createMany({
     data: [
       {
+        title: "Palestra do dia anterior",
+        localId: localI.id,
+        date: '2023-01-09',
+        StartTime: '09:00',
+        EndTime: '11:00',
+        capacity: 15
+      },
+      {
         title: "Minecraft: montando o PC ideal",
         localId: localI.id,
-        StartTime: dayjs('2023-01-10 09:00').toDate(),
-        EndTime: dayjs('2023-01-10 10:00').toDate(),
+        date: '2023-01-10',
+        StartTime: '09:00',
+        EndTime: '10:00',
         capacity: 20
       },
       {
         title: "LoL: montando o PC ideal",
         localId: localI.id,
-        StartTime: dayjs('2023-01-10 10:00').toDate(),
-        EndTime: dayjs('2023-01-10 11:00').toDate(),
+        date: '2023-01-10',
+        StartTime: '10:00',
+        EndTime: '11:00',
         capacity: 1
       },
       {
         title: "Palestra X",
         localId: localII.id,
-        StartTime: dayjs('2023-01-10 9:00').toDate(),
-        EndTime: dayjs('2023-01-10 11:00').toDate(),
+        date: '2023-01-10',
+        StartTime: '09:00',
+        EndTime: '11:00',
         capacity: 15
       },
       {
         title: "Palestra Y",
         localId: localIII.id,
-        StartTime: dayjs('2023-01-10 09:00').toDate(),
-        EndTime: dayjs('2023-01-10 10:00').toDate(),
+        date: '2023-01-10',
+        StartTime: '09:00',
+        EndTime: '10:00',
         capacity: 10
       },
       {
         title: "Palestra Z",
         localId: localIII.id,
-        StartTime: dayjs('2023-01-10 10:00').toDate(),
-        EndTime: dayjs('2023-01-10 11:00').toDate(),
+        date: '2023-01-10',
+        StartTime: '10:00',
+        EndTime: '11:00',
         capacity: 10
+      },
+      {
+        title: "Palestra do dia seguinte",
+        localId: localI.id,
+        date: '2023-01-09',
+        StartTime: '09:00',
+        EndTime: '11:00',
+        capacity: 15
       },
     ]
   });
@@ -154,23 +175,39 @@ async function createActivity() {
   });
 }
 
+async function cleanDb() {
+  await prisma.user_Activity.deleteMany({});
+  await prisma.address.deleteMany({});
+  await prisma.payment.deleteMany({});
+  await prisma.ticket.deleteMany({});
+  await prisma.enrollment.deleteMany({});
+  await prisma.event.deleteMany({});
+  await prisma.session.deleteMany({});
+  await prisma.booking.deleteMany({});
+  await prisma.user.deleteMany({});
+  await prisma.ticketType.deleteMany({});
+  await prisma.room.deleteMany({});
+  await prisma.hotel.deleteMany({});
+  await prisma.activity.deleteMany({});
+  await prisma.local.deleteMany({});
+}
+
 async function main() {
-  let event = await prisma.event.findFirst();
-  if (!event) {
-    event = await prisma.event.create({
-      data: {
-        title: "Driven.t",
-        logoImageUrl: "https://files.driveneducation.com.br/images/logo-rounded.png",
-        backgroundImageUrl: "linear-gradient(to right, #FA4098, #FFD77F)",
-        startsAt: dayjs().toDate(),
-        endsAt: dayjs().add(21, "days").toDate(),
-      },
-    });
-  }
+  await cleanDb();
+
+  const event = await prisma.event.create({
+    data: {
+      title: "Driven.t",
+      logoImageUrl: "https://files.driveneducation.com.br/images/logo-rounded.png",
+      backgroundImageUrl: "linear-gradient(to right, #FA4098, #FFD77F)",
+      startsAt: dayjs().toDate(),
+      endsAt: dayjs().add(21, "days").toDate(),
+    },
+  });
 
   console.log({ event });
-  createHotelandRooms();
-  createActivity();
+  await createHotelandRooms();
+  await createActivity();
 }
 
 main()
