@@ -142,7 +142,7 @@ async function createActivity() {
       {
         title: "Palestra do dia seguinte",
         localId: localI.id,
-        date: '2023-01-09',
+        date: '2023-01-11',
         StartTime: '09:00',
         EndTime: '11:00',
         capacity: 15

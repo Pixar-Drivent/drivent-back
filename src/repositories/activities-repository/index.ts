@@ -1,20 +1,17 @@
 import { prisma } from "@/config";
 import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
 
 async function getActivitiesDates() {
   const activitiesDates = await prisma.activity.groupBy({
     by: ["date"]
   });
-  console.log(activitiesDates);
-  //const dates = activitiesDates.map(activity => dayjs(activity.StartTime).format("YYYY-MM-DD"));
-  //const uniqueDates = [...new Set(dates)];
-  /*const datesObj = activitiesDates.map(date => {return (
-    {
-      name: dayjs(date).format("dddd"),
-      date
+  const datesObj = activitiesDates.map(obj => {return (
+    { ...obj,
+      name: dayjs(obj.date).locale("pt-br").format("dddd").split("-")[0],
     }
-  );});*/
-  return activitiesDates;
+  );});
+  return datesObj;
 }
 
 async function getActivitiesByDateAndLocal(date: string, localId: number) {
