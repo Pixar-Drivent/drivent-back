@@ -8,6 +8,7 @@ async function getActivitiesDates() {
   });
   const datesObj = activitiesDates.map(obj => {return (
     { ...obj,
+      date: dayjs(obj.date).format("DD/MM"),
       name: dayjs(obj.date).locale("pt-br").format("dddd").split("-")[0],
     }
   );});
@@ -25,7 +26,24 @@ async function getActivitiesByDateAndLocal(date: string, localId: number) {
     }
   });
 
-  return activities;
+  function timeToMinutes(time: string) {
+    const hour = +time.split(":")[0];
+    const minutes = +time.split(":")[1];
+    return (hour*60)+minutes;
+  }
+
+  const newActivities = activities.map(activity => {
+    const duration = timeToMinutes(activity.EndTime) - timeToMinutes(activity.StartTime);
+    return ({
+      id: activity.id,
+      title: activity.title,
+      time: activity.StartTime + " - " + activity.EndTime,
+      duration: duration/60,
+      vacancy: activity.capacity - activity._count.User_Activity
+    });
+  });
+
+  return newActivities;
 }
 
 const activitiesRepository = {
