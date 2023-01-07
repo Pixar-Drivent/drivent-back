@@ -3,7 +3,7 @@ import ticketRepository from "@/repositories/ticket-repository";
 import activitiesRepository from "@/repositories/activities-repository";
 import { notFoundError, requestError } from "@/errors";
 import { Activity, Local } from "@prisma/client";
-import localsRepository from "@/repositories/activities-repository";
+import localsRepository from "@/repositories/locals-repository";
 
 async function listActivities(userId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);

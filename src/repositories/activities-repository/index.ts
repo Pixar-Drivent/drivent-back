@@ -112,37 +112,37 @@ async function findUserActivitesSameDayActivityId(userId: number, activityId: nu
 
 function verifyInterval(a: number, b: number, c: number, d: number) {
   if (a <= c && b <= c) {
-    console.log("New before old"); //trivial allow case
+    //trivial allow case: New before old
     return true;
   }
 
   if (a >= d && b >= d) {
-    console.log("New after old"); //trivial allow case
+    //trivial allow case: New after old
     return true;
   }
 
   if (a === c) {
-    console.log("Same start time"); //trivial conflict check
+    //trivial conflict check: Same start time
     return false;
   }
   if (b === d) {
-    console.log("Same end time"); //trivial conflict check
+    //trivial conflict check: Same end time
     return false;
   }
   if (a >= c && b >= d && a <= d) {
-    console.log("(new start) after (old start) and (new end) before (old end)"); //right intersection
+    //right intersection: (new start) after (old start) and (new end) before (old end)
     return false;
   }
   if (a <= c && b <= d && b >= c) {
-    console.log("(old start) before (old start) and (new end) after (old end)"); //left intersection
+    //left intersection: (old start) before (old start) and (new end) after (old end)
     return false;
   }
   if (b >= d && a <= c) {
-    console.log("(new) inside (old)"); //full intersection
+    //full intersection: (new) inside (old)
     return false;
   }
   if (b >= d && a <= d) {
-    console.log("(old) inside (new)"); //full intersection
+    //full intersection: (old) inside (new)
     return false;
   }
 
