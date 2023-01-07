@@ -1,7 +1,7 @@
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketRepository from "@/repositories/ticket-repository";
 import activitiesRepository from "@/repositories/activities-repository";
-import { notFoundError, requestError } from "@/errors";
+import { notFoundError, requestError, unauthorizedError } from "@/errors";
 import { Activity, Local } from "@prisma/client";
 import localsRepository from "@/repositories/locals-repository";
 
@@ -14,7 +14,10 @@ async function listActivities(userId: number) {
   const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
   if (ticket.status === "RESERVED") {
     throw requestError(402, "PaymentRequired");
-  } 
+  }
+  if (ticket.TicketType.isRemote) {
+    throw unauthorizedError();
+  }
 
   try {
     const datesObj = await activitiesRepository.getActivitiesDates();

@@ -13,6 +13,9 @@ export async function getActivities(req: AuthenticatedRequest, res: Response) {
     if (error.name === "NotFoundError") {
       return res.sendStatus(httpStatus.NOT_FOUND);
     }
+    if (error.name === "UnauthorizedError") {
+      return res.sendStatus(httpStatus.UNAUTHORIZED);
+    }
     if (error.statusText === "PaymentRequired") {
       return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
     } 
