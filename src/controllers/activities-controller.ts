@@ -20,13 +20,6 @@ export async function getActivities(req: AuthenticatedRequest, res: Response) {
   }
 }
 
-//insertUserActivity tests:
-// missing activityId -> BadRequest
-// Activity does not exist -> NotFound
-// Activity already enrolled -> Conflict
-// Timeschedule conflict -> Conflict (left, right and inner intersection)
-// Success -> Ok
-
 export async function insertUserActivity(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
   const { activityId } = req.body;
@@ -42,14 +35,13 @@ export async function insertUserActivity(req: AuthenticatedRequest, res: Respons
     if (error.statusText === "Conflict") {
       return res.sendStatus(httpStatus.CONFLICT);
     }
+    if (error.statusText === "Forbidden") {
+      return res.sendStatus(httpStatus.FORBIDDEN);
+    }
+
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }
-
-//deleteUserActivity tests:
-// missing activityId -> BadRequest
-// Activity does not exist -> NotFound
-// Success -> Ok
 
 export async function deleteUserActivity(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;

@@ -121,32 +121,7 @@ function verifyInterval(a: number, b: number, c: number, d: number) {
     return true;
   }
 
-  if (a === c) {
-    //trivial conflict check: Same start time
-    return false;
-  }
-  if (b === d) {
-    //trivial conflict check: Same end time
-    return false;
-  }
-  if (a >= c && b >= d && a <= d) {
-    //right intersection: (new start) after (old start) and (new end) before (old end)
-    return false;
-  }
-  if (a <= c && b <= d && b >= c) {
-    //left intersection: (old start) before (old start) and (new end) after (old end)
-    return false;
-  }
-  if (b >= d && a <= c) {
-    //full intersection: (new) inside (old)
-    return false;
-  }
-  if (b >= d && a <= d) {
-    //full intersection: (old) inside (new)
-    return false;
-  }
-
-  return true; //didn't find intersection
+  return false; //intersection
 }
 
 async function insertUserIntoActivity(userId: number, activityId: number) {

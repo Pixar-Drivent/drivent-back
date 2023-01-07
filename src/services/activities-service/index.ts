@@ -44,7 +44,7 @@ async function insertUser(userId: number, activityId: number) {
   if (activity) {
     const verify = await activitiesRepository.findUserSubscription(userId, activityId);
     if (verify) {
-      throw requestError(409, "Conflict");
+      throw requestError(400, "BadRequest");
     }
 
     const ableToRegister = await activitiesRepository.findUserActivitesSameDayActivityId(userId, activityId);
@@ -70,7 +70,7 @@ async function deleteUser(userId: number, activityId: number) {
     const deleteOperation = await activitiesRepository.deleteUserFromActivity(userId, activityId);
     return deleteOperation;
   } else {
-    throw requestError(400, "BadRequest");
+    throw requestError(404, "NotFound");
   }
 }
 
