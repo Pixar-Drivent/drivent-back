@@ -10,6 +10,9 @@ export async function getHotels(req: AuthenticatedRequest, res: Response) {
     const hotels = await hotelService.getHotels(Number(userId));
     return res.status(httpStatus.OK).send(hotels);
   } catch (error) {
+    if (error.statusText === "OnlineTicket") {
+      return res.sendStatus(httpStatus.BAD_REQUEST);
+    }
     if (error.name === "NotFoundError") {
       return res.sendStatus(httpStatus.NOT_FOUND);
     }
@@ -18,7 +21,7 @@ export async function getHotels(req: AuthenticatedRequest, res: Response) {
     }
     if (error.name === "RequestError") {
       return res.sendStatus(httpStatus.GONE);
-    } 
+    }
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }
@@ -32,6 +35,9 @@ export async function getHotelsWithRooms(req: AuthenticatedRequest, res: Respons
 
     return res.status(httpStatus.OK).send(hotels);
   } catch (error) {
+    if (error.statusText === "OnlineTicket") {
+      return res.sendStatus(httpStatus.BAD_REQUEST);
+    }
     if (error.name === "NotFoundError") {
       return res.sendStatus(httpStatus.NOT_FOUND);
     }
