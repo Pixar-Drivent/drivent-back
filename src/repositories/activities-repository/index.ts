@@ -24,9 +24,13 @@ function timeToMinutes(time: string) {
 }
 
 async function getActivitiesByDateAndLocal(date: string, localId: number) {
+  //BUG: Date is arriving as "day/month" but on prisma it is saved as "YYYY-MM-DD"
+  //(Henrique) converted the string for this function to work
+  const dateOnPrisma = "2023-"+date.split("/")[1]+"-"+date.split("/")[0]; //THIS IS ONLY GOING TO WORK FOR ACTIVITIES IN 2023
+
   const activities = await prisma.activity.findMany({
     where: {
-      date,
+      date: dateOnPrisma,
       localId,
     },
     include: {
@@ -141,6 +145,15 @@ async function deleteUserFromActivity(userId: number, activityId: number) {
   return deleteOperation;
 }
 
+async function findUserActivities(userId: number) {
+  const activities = await prisma.user_Activity.findMany({
+    where: {
+      userId
+    }
+  });
+  return activities;
+}
+
 const activitiesRepository = {
   getActivitiesDates,
   getActivitiesByDateAndLocal,
@@ -149,6 +162,7 @@ const activitiesRepository = {
   insertUserIntoActivity,
   deleteUserFromActivity,
   findUserActivitesSameDayActivityId,
+  findUserActivities
 };
 
 export default activitiesRepository;

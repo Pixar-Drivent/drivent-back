@@ -23,7 +23,7 @@ export async function getActivities(req: AuthenticatedRequest, res: Response) {
 export async function insertUserActivity(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
   const { activityId } = req.body;
-
+  
   if (!userId || !activityId) {
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
@@ -58,6 +58,21 @@ export async function deleteUserActivity(req: AuthenticatedRequest, res: Respons
     if (error.statusText === "NotFound") {
       return res.sendStatus(httpStatus.NOT_FOUND);
     }
+    return res.sendStatus(httpStatus.BAD_REQUEST);
+  }
+}
+
+export async function getUserActivities(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+
+  if (!userId) {
+    return res.sendStatus(httpStatus.BAD_REQUEST);
+  }
+
+  try {
+    const activitiesIds = await activitiesService.getUserActivities(+userId);
+    return res.status(httpStatus.OK).send(activitiesIds);
+  } catch(error) {
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }

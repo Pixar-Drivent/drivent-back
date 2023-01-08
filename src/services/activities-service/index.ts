@@ -74,10 +74,17 @@ async function deleteUser(userId: number, activityId: number) {
   }
 }
 
+async function getUserActivities(userId: number) {
+  const userActivities = await activitiesRepository.findUserActivities(userId);
+  const userActivitiesIds = userActivities.map((activity) => activity.activityId);
+  return userActivitiesIds; 
+}
+
 const activitiesService = {
   listActivities,
   insertUser,
   deleteUser,
+  getUserActivities
 };
 
 export default activitiesService;
