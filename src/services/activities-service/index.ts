@@ -21,10 +21,10 @@ async function listActivities(userId: number) {
 
   try {
     const datesObj = await activitiesRepository.getActivitiesDates();
-    type LocalEvents = {id: number, name: string, events?: Activity[]};
+    type LocalEvents = { id: number; name: string; events?: Activity[] };
     const locals: LocalEvents[] = await localsRepository.getLocals();
 
-    const datesLocalsObj = datesObj.map(activity => {
+    const datesLocalsObj = datesObj.map((activity) => {
       return { ...activity, locals: JSON.parse(JSON.stringify(locals)) };
     });
 
@@ -42,8 +42,52 @@ async function listActivities(userId: number) {
   }
 }
 
+async function insertUser(userId: number, activityId: number) {
+  const activity = await activitiesRepository.findActivityById(activityId);
+  if (activity) {
+    const verify = await activitiesRepository.findUserSubscription(userId, activityId);
+    if (verify) {
+      throw requestError(400, "BadRequest");
+    }
+
+    const ableToRegister = await activitiesRepository.findUserActivitesSameDayActivityId(userId, activityId);
+
+    if (ableToRegister) {
+      const insertion = await activitiesRepository.insertUserIntoActivity(userId, activityId);
+      return insertion;
+    } else {
+      throw requestError(409, "Conflict");
+    }
+  } else {
+    throw requestError(400, "BadRequest");
+  }
+}
+
+async function deleteUser(userId: number, activityId: number) {
+  const activity = await activitiesRepository.findActivityById(activityId);
+  if (activity) {
+    const verify = await activitiesRepository.findUserSubscription(userId, activityId);
+    if (!verify) {
+      throw requestError(404, "NotFound");
+    }
+    const deleteOperation = await activitiesRepository.deleteUserFromActivity(userId, activityId);
+    return deleteOperation;
+  } else {
+    throw requestError(404, "NotFound");
+  }
+}
+
+async function getUserActivities(userId: number) {
+  const userActivities = await activitiesRepository.findUserActivities(userId);
+  const userActivitiesIds = userActivities.map((activity) => activity.activityId);
+  return userActivitiesIds; 
+}
+
 const activitiesService = {
-  listActivities
+  listActivities,
+  insertUser,
+  deleteUser,
+  getUserActivities
 };
-  
+
 export default activitiesService;
