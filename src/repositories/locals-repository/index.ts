@@ -11,11 +11,11 @@ async function getLocals(): Promise<Local[]> {
 
   if (!localsData) {
     const locals = await prisma.local.findMany();
-    await redisClient.set("locals", JSON.stringify(locals));
+    await redisClient.setEx("locals", 24*60*60, JSON.stringify(locals));
     await redisClient.disconnect();
     return locals;
   }
-  
+
   await redisClient.disconnect();
   return JSON.parse(localsData);
 }
