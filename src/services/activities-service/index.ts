@@ -38,6 +38,7 @@ async function listActivities(userId: number) {
 
     return datesLocalsObj;
   } catch (error) {
+    console.log(error);
     throw requestError(400, "BadRequest");
   }
 }
