@@ -17,6 +17,7 @@ model User {
   Enrollment    Enrollment?
   Session       Session[]
   User_Activity User_Activity[]
+  Payment_Url   Payment_Url[]
 }
 
 model Session {
@@ -158,6 +159,13 @@ model User_Activity {
   activityId Int
   Activity   Activity @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   User       User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Payment_Url {
+  id     Int    @id @default(autoincrement())
+  userId Int    @unique
+  url    String @db.VarChar(511)
+  User   User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 enum TicketStatus {
