@@ -1,20 +1,33 @@
 import { prisma } from "@/config";
+import { createClient } from "redis";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { start } from "repl";
 
-async function getActivitiesDates() {
-  const activitiesDates = await prisma.activity.groupBy({
-    by: ["date"],
-  });
-  const datesObj = activitiesDates.map((obj) => {
-    return {
-      ...obj,
-      date: dayjs(obj.date).format("DD/MM"),
-      name: dayjs(obj.date).locale("pt-br").format("dddd").split("-")[0],
-    };
-  });
-  return datesObj;
+const redisClient = createClient();
+
+async function getActivitiesDates(): Promise<{date: string, name: string}[]> {
+  await redisClient.connect();
+
+  const activitiesData = await redisClient.get("driventActivitiesDates");
+
+  if (!activitiesData) {
+    const activitiesDates = await prisma.activity.groupBy({
+      by: ["date"],
+    });
+    const datesObj = activitiesDates.map((obj) => {
+      return {
+        ...obj,
+        date: dayjs(obj.date).format("DD/MM"),
+        name: dayjs(obj.date).locale("pt-br").format("dddd").split("-")[0],
+      };
+    });
+    await redisClient.setEx("driventActivitiesDates", 24*60*60, JSON.stringify(datesObj));
+    await redisClient.disconnect();
+    return datesObj;
+  }
+
+  await redisClient.disconnect();
+  return JSON.parse(activitiesData);
 }
 
 function timeToMinutes(time: string) {
