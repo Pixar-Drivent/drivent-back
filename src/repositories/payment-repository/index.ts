@@ -10,19 +10,19 @@ async function findPaymentByTicketId(ticketId: number) {
 }
 
 async function createPayment(ticketId: number, params: PaymentParams) {
-  await prisma.ticket.update({
+  const [updateTicketInfo, createPaymentInfo] = await prisma.$transaction([prisma.ticket.update({
     where: { id: ticketId },
     data: {
       status: "PAID",
     },
-  });
-
-  return prisma.payment.create({
+  }), prisma.payment.create({
     data: {
       ticketId,
       ...params,
     },
-  });
+  })]);
+
+  return createPaymentInfo;
 }
 export type PaymentParams = Omit<Payment, "id" | "createdAt" | "updatedAt">;
 
