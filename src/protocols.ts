@@ -30,3 +30,11 @@ export type RequestError = {
   name: string,
   message: string,
 };
+
+export type HotelType = {
+  id: number,
+  name: string,
+  image: string,
+  type: string,
+  vacancy: number
+};
