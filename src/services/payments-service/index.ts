@@ -27,23 +27,19 @@ async function getPaymentByTicketId(userId: number, ticketId: number) {
   return payment;
 }
 
-async function paymentProcess(ticketId: number, userId: number, cardData: CardPaymentParams) {
-  await verifyTicketAndEnrollment(ticketId, userId);
+async function generateStripeUrl(userId: number, ticketId: number) {
+  //await verifyTicketAndEnrollment(ticketId, userId);
 
-  const ticket = await ticketRepository.findTickeWithTypeById(ticketId);
+  //generate stripeUrl and save it on the back end;
 
-  const paymentData = {
-    ticketId,
-    value: ticket.TicketType.price,
-    cardIssuer: cardData.issuer,
-    cardLastDigits: cardData.number.toString().slice(-4),
-  };
+  const paymentUrl = await paymentRepository.handleNewPayment(userId, ticketId);
 
-  const payment = await paymentRepository.createPayment(ticketId, paymentData);
+  return paymentUrl;
+}
 
-  await ticketRepository.ticketProcessPayment(ticketId);
-
-  return payment;
+async function verifyUserPayment(userId: number) {
+  const status = await paymentRepository.verifyPayment(userId);
+  return status;
 }
 
 export type CardPaymentParams = {
@@ -56,7 +52,8 @@ export type CardPaymentParams = {
 
 const paymentService = {
   getPaymentByTicketId,
-  paymentProcess,
+  generateStripeUrl,
+  verifyUserPayment
 };
 
 export default paymentService;
