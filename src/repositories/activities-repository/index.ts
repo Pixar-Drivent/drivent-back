@@ -49,6 +49,9 @@ async function getActivitiesByDateAndLocal(date: string, localId: number) {
     include: {
       _count: true,
     },
+    orderBy: {
+      StartTime: "asc"
+    }
   });
 
   const newActivities = activities.map((activity) => {
