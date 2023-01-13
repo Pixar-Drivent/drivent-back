@@ -377,7 +377,7 @@ describe("PUT /booking", () => {
       await createPayment(ticket.id, ticketType.price);
 
       const hotel = await createHotel();
-      const room = await createRoomWithHotelId(hotel.id);
+      await createRoomWithHotelId(hotel.id);
 
       const otherRoom = await createRoomWithHotelId(hotel.id);
       const booking = await createBooking({
