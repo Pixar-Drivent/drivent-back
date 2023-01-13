@@ -28,15 +28,6 @@ export async function createActivity(
   });
 }
 
-const example = {
-  title: "Palestra do dia anterior",
-  localId: "localId",
-  date: "2023-01-09",
-  StartTime: "09:00",
-  EndTime: "11:00",
-  capacity: 15,
-};
-
 export async function createUserActivity(activityId: number, userId: number) {
   return prisma.user_Activity.create({
     data: {
