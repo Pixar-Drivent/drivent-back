@@ -6,20 +6,16 @@ import httpStatus from "http-status";
 
 export async function singInPost(req: Request, res: Response) {
   const { email, password } = req.body as SignInParams;
-  console.log("SIGN-IN BODY", req.body);
-
   try {
     const result = await authenticationService.signIn({ email, password });
 
     return res.status(httpStatus.OK).send(result);
   } catch (error) {
-    console.error(error);
     return res.status(httpStatus.UNAUTHORIZED).send(error.message);
   }
 }
 
 export async function exChangeCodeForAcessToken(req: Request, res: Response) {
-  console.log("ENTREI NO CONTROLLER", req.body);
   const { code } = req.body;
   const { REDIRECT_URL, CLIENT_ID, CLIENT_SECRET } = process.env;
 
@@ -32,8 +28,6 @@ export async function exChangeCodeForAcessToken(req: Request, res: Response) {
     client_secret: CLIENT_SECRET
   };
 
-  console.log("body: ", body);
-
   try {
     const response = await axios.post(GITHUB_ACESS_TOKEN_URL, body, {
       headers: {
@@ -42,15 +36,15 @@ export async function exChangeCodeForAcessToken(req: Request, res: Response) {
     });
     const token = response.data.access_token;
 
-    console.log("token: ", token);
-
     const userResponse = await axios.get("https://api.github.com/user", {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
-    const user = await authenticationService.signInOAuth(userResponse.data.email, token);
-    console.log("user:", user);
+
+    const userIdentification = userResponse.data.email ? userResponse.data.email : userResponse.data.id + "";
+
+    const user = await authenticationService.signInOAuth(userIdentification);
 
     return res.status(httpStatus.OK).send(user);
   } catch (error) {
