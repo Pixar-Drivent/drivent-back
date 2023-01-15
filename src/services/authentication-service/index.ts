@@ -21,10 +21,10 @@ async function signIn(params: SignInParams): Promise<SignInResult> {
     token,
   };
 }
-async function signInOAuth(email: string, token: string ): Promise<SignInResult> {
-  const user = await getUserOrFail(email);
+async function signInOAuth(email: string): Promise<SignInResult> {
+  const user = await getUserOrFailOAuth(email);
 
-  const userToken = await createSessionOAuth(user.id, token); 
+  const userToken = await createSession(user.id); 
   
   return {
     user: {
@@ -33,6 +33,24 @@ async function signInOAuth(email: string, token: string ): Promise<SignInResult>
     },
     token: userToken,
   };
+}
+
+async function getUserOrFailOAuth(email: string): Promise<GetUserOrFailResult> {
+  let user = await userRepository.findByEmail(email, { id: true, email: true, password: true });
+  if (!user) {  //If user is not registered yet, creates a new user with a random password, user should be able to login with github nonetheless
+    user = await userRepository.create({ email: email, password: createRandomPassword() });
+  }
+  return user;
+}
+
+function createRandomPassword() {
+  let password = "";
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+  for (let i = 0; i<64; i++) {
+    password += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return password;
 }
 
 async function getUserOrFail(email: string): Promise<GetUserOrFailResult> {
@@ -51,14 +69,7 @@ async function createSession(userId: number) {
 
   return token;
 }
-async function createSessionOAuth(userId: number, token: string) {
-  await sessionRepository.create({
-    token,
-    userId,
-  });
 
-  return token;
-}
 async function validatePasswordOrFail(password: string, userPassword: string) {
   const isPasswordValid = await bcrypt.compare(password, userPassword);
   if (!isPasswordValid) throw invalidCredentialsError();

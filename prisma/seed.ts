@@ -176,6 +176,7 @@ async function createActivity() {
 }
 
 async function cleanDb() {
+  await prisma.payment_Url.deleteMany({});
   await prisma.user_Activity.deleteMany({});
   await prisma.address.deleteMany({});
   await prisma.payment.deleteMany({});
