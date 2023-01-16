@@ -2,7 +2,7 @@ import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketRepository from "@/repositories/ticket-repository";
 import activitiesRepository from "@/repositories/activities-repository";
 import { notFoundError, requestError, unauthorizedError } from "@/errors";
-import { Activity, Local } from "@prisma/client";
+import { Activity } from "@prisma/client";
 import localsRepository from "@/repositories/locals-repository";
 
 async function listActivities(userId: number) {
@@ -38,7 +38,6 @@ async function listActivities(userId: number) {
 
     return datesLocalsObj;
   } catch (error) {
-    console.log(error);
     throw requestError(400, "BadRequest");
   }
 }

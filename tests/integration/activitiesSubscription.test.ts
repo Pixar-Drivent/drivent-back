@@ -56,7 +56,7 @@ describe("POST /activities", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeRemote();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      const payment = await createPayment(ticket.id, ticketType.price);
+      await createPayment(ticket.id, ticketType.price);
 
       const response = await server.post("/activities").set("Authorization", `Bearer ${token}`);
       expect(response.status).toEqual(httpStatus.UNAUTHORIZED);
@@ -68,7 +68,7 @@ describe("POST /activities", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeRemote();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
-      const payment = await createPayment(ticket.id, ticketType.price);
+      await createPayment(ticket.id, ticketType.price);
 
       const response = await server.post("/activities").set("Authorization", `Bearer ${token}`);
       expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
@@ -77,7 +77,7 @@ describe("POST /activities", () => {
     it("should respond with status 404 when user has no enrollment ", async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
-      const ticketType = await createTicketTypeRemote();
+      await createTicketTypeRemote();
       const response = await server.post("/activities").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.NOT_FOUND);
@@ -90,10 +90,10 @@ describe("POST /activities", () => {
         const enrollment = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketTypeWithHotel();
         const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-        const payment = await createPayment(ticket.id, ticketType.price);
+        await createPayment(ticket.id, ticketType.price);
         const local = await createLocal();
         const activity = await createActivity(local.id, "09:00", "10:00", 10, "2023-01-09");
-        const userActivity = await createUserActivity(activity.id, user.id);
+        await createUserActivity(activity.id, user.id);
 
         const body = {
           activityId: activity.id,
@@ -110,11 +110,11 @@ describe("POST /activities", () => {
         const enrollment = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketTypeWithHotel();
         const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-        const payment = await createPayment(ticket.id, ticketType.price);
+        await createPayment(ticket.id, ticketType.price);
         const local = await createLocal();
         const activityFirst = await createActivity(local.id, "09:00", "10:00", 10, "2023-01-09");
         const activityConflict = await createActivity(local.id, "09:30", "10:30", 10, "2023-01-09");
-        const userActivity = await createUserActivity(activityFirst.id, user.id);
+        await createUserActivity(activityFirst.id, user.id);
 
         const body = {
           activityId: activityConflict.id,
@@ -131,11 +131,11 @@ describe("POST /activities", () => {
         const enrollment = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketTypeWithHotel();
         const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-        const payment = await createPayment(ticket.id, ticketType.price);
+        await createPayment(ticket.id, ticketType.price);
         const local = await createLocal();
         const activityFirst = await createActivity(local.id, "09:00", "10:00", 10, "2023-01-09");
         const activityConflict = await createActivity(local.id, "08:30", "09:30", 10, "2023-01-09");
-        const userActivity = await createUserActivity(activityFirst.id, user.id);
+        await createUserActivity(activityFirst.id, user.id);
 
         const body = {
           activityId: activityConflict.id,
@@ -152,11 +152,11 @@ describe("POST /activities", () => {
         const enrollment = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketTypeWithHotel();
         const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-        const payment = await createPayment(ticket.id, ticketType.price);
+        await createPayment(ticket.id, ticketType.price);
         const local = await createLocal();
         const activityFirst = await createActivity(local.id, "09:00", "10:00", 10, "2023-01-09");
         const activityConflict = await createActivity(local.id, "08:30", "10:30", 10, "2023-01-09");
-        const userActivity = await createUserActivity(activityFirst.id, user.id);
+        await createUserActivity(activityFirst.id, user.id);
 
         const body = {
           activityId: activityConflict.id,
@@ -173,11 +173,11 @@ describe("POST /activities", () => {
         const enrollment = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketTypeWithHotel();
         const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-        const payment = await createPayment(ticket.id, ticketType.price);
+        await createPayment(ticket.id, ticketType.price);
         const local = await createLocal();
         const activityFirst = await createActivity(local.id, "09:00", "10:00", 10, "2023-01-09");
         const activityConflict = await createActivity(local.id, "09:15", "09:45", 10, "2023-01-09");
-        const userActivity = await createUserActivity(activityFirst.id, user.id);
+        await createUserActivity(activityFirst.id, user.id);
 
         const body = {
           activityId: activityConflict.id,
@@ -194,7 +194,7 @@ describe("POST /activities", () => {
         const enrollment = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketTypeWithHotel();
         const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-        const payment = await createPayment(ticket.id, ticketType.price);
+        await createPayment(ticket.id, ticketType.price);
         const local = await createLocal();
         const activity = await createActivity(local.id, "09:00", "10:00", 10, "2023-01-09");
 
@@ -241,7 +241,7 @@ describe("DELETE /activities", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeRemote();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      const payment = await createPayment(ticket.id, ticketType.price);
+      await createPayment(ticket.id, ticketType.price);
 
       const response = await server.delete("/activities").set("Authorization", `Bearer ${token}`);
       expect(response.status).toEqual(httpStatus.UNAUTHORIZED);
@@ -253,7 +253,7 @@ describe("DELETE /activities", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeRemote();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
-      const payment = await createPayment(ticket.id, ticketType.price);
+      await createPayment(ticket.id, ticketType.price);
 
       const response = await server.delete("/activities").set("Authorization", `Bearer ${token}`);
       expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
@@ -262,7 +262,7 @@ describe("DELETE /activities", () => {
     it("should respond with status 404 when user has no enrollment ", async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
-      const ticketType = await createTicketTypeRemote();
+      await createTicketTypeRemote();
       const response = await server.delete("/activities").set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.NOT_FOUND);
@@ -275,7 +275,7 @@ describe("DELETE /activities", () => {
         const enrollment = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketTypeWithHotel();
         const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-        const payment = await createPayment(ticket.id, ticketType.price);
+        await createPayment(ticket.id, ticketType.price);
 
         const body = {
           activityId: -1,
@@ -293,10 +293,10 @@ describe("DELETE /activities", () => {
         const enrollment = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketTypeWithHotel();
         const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-        const payment = await createPayment(ticket.id, ticketType.price);
+        await createPayment(ticket.id, ticketType.price);
         const local = await createLocal();
         const activity = await createActivity(local.id, "09:00", "10:00", 10, "2023-01-09");
-        const userWrongActivity = await createUserActivity(activity.id, userWrong.id);
+        await createUserActivity(activity.id, userWrong.id);
 
         const body = {
           activityId: activity.id,
@@ -313,10 +313,10 @@ describe("DELETE /activities", () => {
         const enrollment = await createEnrollmentWithAddress(user);
         const ticketType = await createTicketTypeWithHotel();
         const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-        const payment = await createPayment(ticket.id, ticketType.price);
+        await createPayment(ticket.id, ticketType.price);
         const local = await createLocal();
         const activity = await createActivity(local.id, "09:00", "10:00", 10, "2023-01-09");
-        const userActivity = await createUserActivity(activity.id, user.id);
+        await createUserActivity(activity.id, user.id);
 
         const body = {
           activityId: activity.id,
